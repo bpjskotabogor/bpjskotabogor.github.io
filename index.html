@@ -1772,7 +1772,23 @@
       return type === 'video' ? 'badge-video' : type === 'image' ? 'badge-image' : 'badge-pdf';
     }
 
-    async function checkFileAvailability(url) {
+   async function checkFileAvailability(url) {
+  if (fileStatus[url] !== undefined) return fileStatus[url];
+
+  if (window.location.protocol === 'file:') {
+    fileStatus[url] = null;
+    return null;
+  }
+
+  try {
+    const response = await fetch(url, { method: 'GET' });
+    fileStatus[url] = response.ok;
+    return response.ok;
+  } catch (e) {
+    fileStatus[url] = null;
+    return null;
+  }
+}
       if (fileStatus[url] !== undefined) return fileStatus[url];
 
       if (window.location.protocol === 'file:') {
